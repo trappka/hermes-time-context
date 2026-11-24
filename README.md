@@ -10,8 +10,8 @@ feel on its own: how long the session has been running and how long the previous
 turn actually took.
 
 ```
-[time-context] Now: Tue 24 Nov 2026, 22:14:07 (+03:00 Europe/Moscow) · session 1 h 12 m · last turn 4 m 38 s · reading taken at turn start
-Window: "School hours" (Mon-Fri 08:30-15:10) — school contour busy: no deploy, no heavy builds
+[time-context] Now: Tue 24 Nov 2026, 22:14:07 (+01:00 Europe/Berlin) · session 1 h 12 m · last turn 4 m 38 s · reading taken at turn start
+Window: "Work hours" (Mon-Fri 09:00-18:00) — office hours: no deploys while people are around
 ```
 
 ## Why not a file in the system prompt
@@ -48,11 +48,11 @@ plugins:
     time-context:
       settings:
         locale: ru
-        timezone: Europe/Moscow
+        timezone: Europe/Berlin
         windows:
-          - name: Учебное время
-            when: "пн-пт 08:30-15:10"
-            note: "школьный контур занят: без деплоя, тяжёлых сборок и звонков"
+          - name: Рабочие часы
+            when: "пн-пт 09:00-18:00"
+            note: "люди на работе: деплой и тяжёлые сборки лучше отложить"
           - name: Ночь
             when: "23:00-08:00"
             note: "владелец, вероятно, спит: не задавай вопросов, решай и отчитывайся утром"
@@ -62,15 +62,15 @@ plugins:
 Russian day names, and one time range. A range that wraps midnight
 (`23:00-08:00`) belongs to the day it starts on, so it covers the early morning.
 
-Windows are pure configuration: nothing about school, night or work is hardcoded.
-A new project or a new timetable is a new entry, not a code change.
+Windows are pure configuration: nothing about work hours, night or quiet time is
+hardcoded. A new project or a new timetable is a new entry, not a code change.
 
 ## Install
 
 ```bash
 hermes plugins install trappka/hermes-time-context
 hermes config set plugins.entries.time-context.settings.locale ru
-hermes config set plugins.entries.time-context.settings.timezone Europe/Moscow
+hermes config set plugins.entries.time-context.settings.timezone Europe/Berlin
 ```
 
 Or drop the directory into `~/.hermes/plugins/time-context/` and restart Hermes.
@@ -79,9 +79,9 @@ Manage windows from chat:
 
 ```
 /time-context
-/time-context add School | Mon-Fri 08:30-15:10 | no deploy, no heavy builds
+/time-context add Office | Mon-Fri 09:00-18:00 | no deploys while people work
 /time-context windows
-/time-context remove School
+/time-context remove Office
 ```
 
 ## Settings
@@ -93,7 +93,7 @@ in `plugin.yaml` under `config_schema`.
 |---|---|---|---|
 | `enabled` | bool | `true` | Inject the block at turn start |
 | `locale` | str (`en`/`ru`) | `en` | Language of the block and of weekday/month names |
-| `timezone` | str | machine zone | IANA zone, e.g. `Europe/Moscow` |
+| `timezone` | str | machine zone | IANA zone, e.g. `Europe/Berlin` |
 | `show_seconds` | bool | `true` | Seconds in the clock reading |
 | `show_durations` | bool | `true` | Session age and previous turn length |
 | `show_stamp_note` | bool | `true` | "reading taken at turn start" hint |

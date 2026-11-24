@@ -108,28 +108,28 @@ class DayParsingTests(unittest.TestCase):
 
 class WindowTests(unittest.TestCase):
     def setUp(self):
-        self.school = clock.parse_window({
-            "name": "school",
-            "when": "Mon-Fri 08:30-15:10",
+        self.office = clock.parse_window({
+            "name": "office",
+            "when": "Mon-Fri 09:00-18:00",
             "note": "busy",
         })
 
     def test_parse(self):
-        self.assertIsNotNone(self.school)
-        self.assertEqual(self.school.start_minute, 8 * 60 + 30)
-        self.assertEqual(self.school.end_minute, 15 * 60 + 10)
+        self.assertIsNotNone(self.office)
+        self.assertEqual(self.office.start_minute, 9 * 60)
+        self.assertEqual(self.office.end_minute, 18 * 60)
 
     def test_inside_on_weekday(self):
-        self.assertTrue(self.school.covers(at(2026, 11, 24, 10, 0)))  # Tuesday
+        self.assertTrue(self.office.covers(at(2026, 11, 24, 10, 0)))  # Tuesday
 
     def test_outside_before_start(self):
-        self.assertFalse(self.school.covers(at(2026, 11, 24, 8, 29)))
+        self.assertFalse(self.office.covers(at(2026, 11, 24, 8, 59)))
 
     def test_end_is_exclusive(self):
-        self.assertFalse(self.school.covers(at(2026, 11, 24, 15, 10)))
+        self.assertFalse(self.office.covers(at(2026, 11, 24, 18, 0)))
 
     def test_weekend_is_outside(self):
-        self.assertFalse(self.school.covers(at(2026, 11, 28, 10, 0)))  # Saturday
+        self.assertFalse(self.office.covers(at(2026, 11, 28, 10, 0)))  # Saturday
 
     def test_midnight_wrap_belongs_to_start_day(self):
         night = clock.parse_window({"name": "night", "when": "23:00-08:00"})
@@ -152,7 +152,7 @@ class WindowTests(unittest.TestCase):
         self.assertEqual((window.start_minute, window.end_minute), (540, 1020))
 
     def test_parse_windows_ignores_noise(self):
-        windows = clock.parse_windows([{"when": "Mon-Fri 08:30-15:10"}, "мусор", 42, None])
+        windows = clock.parse_windows([{"when": "Mon-Fri 09:00-18:00"}, "мусор", 42, None])
         self.assertEqual(len(windows), 1)
 
 
@@ -190,7 +190,7 @@ class RenderTests(unittest.TestCase):
         defaults = dict(
             locale="ru",
             windows=clock.parse_windows([
-                {"name": "ночь", "when": "23:00-08:00", "note": "Никита, вероятно, спит"},
+                {"name": "ночь", "when": "23:00-08:00", "note": "владелец, вероятно, спит"},
             ]),
         )
         defaults.update(overrides)
@@ -207,7 +207,7 @@ class RenderTests(unittest.TestCase):
         self.assertIn("сессия 1 ч 12 м 11 с", block)
         self.assertIn("прошлый ход 4 м 38 с", block)
         self.assertIn("время на начало хода", block)
-        self.assertIn('Окно: "ночь" (23:00-08:00) — Никита, вероятно, спит', block)
+        self.assertIn('Окно: "ночь" (23:00-08:00) — владелец, вероятно, спит', block)
         self.assertEqual(len(block.splitlines()), 2)
 
     def test_no_windows_no_extra_line(self):

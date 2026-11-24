@@ -57,6 +57,27 @@ STRINGS: dict[str, dict[str, str]] = {
         "stamp_note": "reading taken at turn start",
         "window": "Window",
         "windows": "Windows",
+        "cmd_help": (
+            "**time-context**\n"
+            "• `/time-context` — the block the model sees right now\n"
+            "• `/time-context windows` — configured windows\n"
+            "• `/time-context add <name> | <when> | <note>` — add or replace a window\n"
+            "• `/time-context remove <name>` — delete a window\n"
+            "Example: `/time-context add Office | Mon-Fri 09:00-18:00 | no deploys while people work`"
+        ),
+        "cmd_active_none": "No active windows",
+        "cmd_active_count": "Active windows: {count}",
+        "cmd_windows_empty": "No windows yet. Add one: `/time-context add Office | Mon-Fri 09:00-18:00 | no deploys`",
+        "cmd_windows_header": "**Windows:**",
+        "cmd_saved": "Window {label} saved ({count} total).",
+        "cmd_removed": "Window «{name}» removed ({count} left).",
+        "cmd_not_found": "No window named «{name}».",
+        "cmd_bad_window": (
+            "Could not parse that window. Format: `/time-context add <name> | <when> | <note>`, "
+            "e.g. `Office | Mon-Fri 09:00-18:00 | no deploys while people work`."
+        ),
+        "cmd_save_failed": "The host refused to write settings — set the window in config.yaml instead.",
+        "cmd_error": "time-context: error — {error}",
     },
     "ru": {
         "now": "Сейчас",
@@ -65,6 +86,27 @@ STRINGS: dict[str, dict[str, str]] = {
         "stamp_note": "время на начало хода",
         "window": "Окно",
         "windows": "Окна",
+        "cmd_help": (
+            "**time-context**\n"
+            "• `/time-context` — блок, который видит модель сейчас\n"
+            "• `/time-context windows` — настроенные окна\n"
+            "• `/time-context add <имя> | <когда> | <заметка>` — добавить или заменить окно\n"
+            "• `/time-context remove <имя>` — удалить окно\n"
+            "Пример: `/time-context add Работа | пн-пт 09:00-18:00 | без деплоя, пока люди работают`"
+        ),
+        "cmd_active_none": "Активных окон нет",
+        "cmd_active_count": "Активных окон: {count}",
+        "cmd_windows_empty": "Окон нет. Добавить: `/time-context add Работа | пн-пт 09:00-18:00 | без деплоя`",
+        "cmd_windows_header": "**Окна:**",
+        "cmd_saved": "Окно {label} сохранено (всего {count}).",
+        "cmd_removed": "Окно «{name}» удалено (осталось {count}).",
+        "cmd_not_found": "Окна «{name}» нет.",
+        "cmd_bad_window": (
+            "Не понял окно. Формат: `/time-context add <имя> | <когда> | <заметка>`, "
+            "например `Работа | пн-пт 09:00-18:00 | без деплоя, пока люди работают`."
+        ),
+        "cmd_save_failed": "Хост не дал записать настройки — задай окно в config.yaml вручную.",
+        "cmd_error": "time-context: ошибка — {error}",
     },
 }
 

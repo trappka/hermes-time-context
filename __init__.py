@@ -43,14 +43,7 @@ _MAX_SESSIONS = 256
 # A turn longer than this is almost certainly a suspended machine, not real work.
 _MAX_TURN_SECONDS = 6 * 3600
 
-_HELP = (
-    "**time-context**\n"
-    "• `/time-context` — the block the model sees right now\n"
-    "• `/time-context windows` — configured windows\n"
-    "• `/time-context add <name> | <when> | <note>` — add or replace a window\n"
-    "• `/time-context remove <name>` — delete a window\n"
-    "Example: `/time-context add School | Mon-Fri 08:30-15:10 | no deploy, no heavy builds`"
-)
+_HELP_HINT = "Run `/time-context help` for usage."
 
 
 def _session_state(session_id: str, *, create: bool = True) -> dict[str, Any]:
@@ -224,22 +217,23 @@ def register(ctx: Any) -> None:
     def handle_command(raw_args: str = "") -> str:
         args = (raw_args or "").strip()
         lowered = args.lower()
+        text = read_options(ctx).strings()
         try:
             if not args or lowered in ("show", "status"):
                 block, payload = _current_view(ctx)
                 active = payload.get("active_windows") or []
-                tail = f"Активных окон: {len(active)}" if active else "Активных окон нет"
+                tail = (text["cmd_active_count"].format(count=len(active)) if active
+                        else text["cmd_active_none"])
                 return f"{block}\n\n{tail}"
 
             if lowered in ("help", "?", "-h", "--help"):
-                return _HELP
+                return text["cmd_help"]
 
             if lowered in ("windows", "list", "ls"):
                 windows = parse_windows(_windows_raw(ctx))
                 if not windows:
-                    return ("Окон нет. Добавить: "
-                            "`/time-context add School | Mon-Fri 08:30-15:10 | no deploy`")
-                lines = ["**Окна:**"]
+                    return text["cmd_windows_empty"]
+                lines = [text["cmd_windows_header"]]
                 for window in windows:
                     note = f" — {window.note}" if window.note else ""
                     lines.append(f"• {window.label()}{note}")
@@ -253,8 +247,7 @@ def register(ctx: Any) -> None:
                 note = parts[2] if len(parts) > 2 else ""
                 candidate = parse_window({"name": name, "when": when, "note": note})
                 if candidate is None:
-                    return ("Не понял окно. Формат: `/time-context add <name> | <when> | <note>`, "
-                            "например `School | Mon-Fri 08:30-15:10 | no deploy`.")
+                    return text["cmd_bad_window"]
                 stored = [
                     entry for entry in _windows_raw(ctx)
                     if not (isinstance(entry, dict)
@@ -262,8 +255,8 @@ def register(ctx: Any) -> None:
                 ]
                 stored.append({"name": name, "when": when, "note": note})
                 if not _save_windows(ctx, stored):
-                    return "Хост не дал записать настройки — задай окно в config.yaml вручную."
-                return f"Окно {candidate.label()} сохранено (всего {len(stored)})."
+                    return text["cmd_save_failed"]
+                return text["cmd_saved"].format(label=candidate.label(), count=len(stored))
 
             if lowered.startswith(("remove ", "rm ", "delete ")):
                 target = args.split(" ", 1)[1].strip().lower()
@@ -274,15 +267,15 @@ def register(ctx: Any) -> None:
                             and str(entry.get("name") or "").lower() == target)
                 ]
                 if len(stored) == len(current):
-                    return f"Окна «{target}» нет."
+                    return text["cmd_not_found"].format(name=target)
                 if not _save_windows(ctx, stored):
-                    return "Хост не дал записать настройки — правь config.yaml вручную."
-                return f"Окно «{target}» удалено (осталось {len(stored)})."
+                    return text["cmd_save_failed"]
+                return text["cmd_removed"].format(name=target, count=len(stored))
 
-            return _HELP
+            return text["cmd_help"] + "\n" + _HELP_HINT
         except Exception as exc:
             logger.warning("time-context: command failed: %s", exc)
-            return f"time-context: ошибка — {exc}"
+            return text["cmd_error"].format(error=exc)
 
     ctx.register_command(
         "time-context",

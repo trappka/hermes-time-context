@@ -87,13 +87,13 @@ class CommandTests(unittest.TestCase):
 
     def test_add_then_list(self):
         ctx = self.ctx()
-        out = self.run_cmd(ctx, "add School | Mon-Fri 08:30-15:10 | no deploy, no heavy builds")
+        out = self.run_cmd(ctx, "add Office | Mon-Fri 09:00-18:00 | no deploys while people work")
         self.assertIn("сохранено", out)
         stored = ctx.settings["windows"]
         self.assertEqual(len(stored), 1)
-        self.assertEqual(stored[0]["name"], "School")
+        self.assertEqual(stored[0]["name"], "Office")
         listing = self.run_cmd(ctx, "windows")
-        self.assertIn('"School" (Mon-Fri 08:30-15:10)', listing)
+        self.assertIn('"Office" (Mon-Fri 09:00-18:00)', listing)
         self.assertIn("no deploy", listing)
 
     def test_add_replaces_same_name(self):
@@ -123,7 +123,7 @@ class CommandTests(unittest.TestCase):
         base = {"locale": "ru", "windows": []}
         ctx = FakeCtx(base, writable=False)
         plugin.register(ctx)
-        out = self.run_cmd(ctx, "add School | Mon-Fri 08:30-15:10 | busy")
+        out = self.run_cmd(ctx, "add Office | Mon-Fri 09:00-18:00 | busy")
         self.assertIn("config.yaml", out)
 
     def test_added_window_is_injected_next_turn(self):
@@ -132,6 +132,16 @@ class CommandTests(unittest.TestCase):
         result = ctx.hooks["pre_llm_call"][0](session_id="s", conversation_history=[])
         self.assertIn('Окно: "Night"', result["context"])
 
+    def test_command_speaks_english_for_en_locale(self):
+        ctx = self.ctx(locale="en")
+        self.assertIn("No windows yet", self.run_cmd(ctx, "windows"))
+        self.assertIn("add <name> | <when> | <note>", self.run_cmd(ctx, "help"))
+        self.assertIn("saved", self.run_cmd(ctx, "add Office | Mon-Fri 09:00-18:00 | busy"))
+
+    def test_command_speaks_russian_for_ru_locale(self):
+        ctx = self.ctx(locale="ru")
+        self.assertIn("Окон нет", self.run_cmd(ctx, "windows"))
+
 
 class SettingsParsingTests(unittest.TestCase):
     def test_windows_accept_mapping_form(self):
@@ -139,9 +149,9 @@ class SettingsParsingTests(unittest.TestCase):
         self.assertEqual([w.name for w in windows], ["Night"])
 
     def test_windows_accept_plain_strings(self):
-        windows = clock.parse_windows(["Mon-Fri 08:30-15:10"])
+        windows = clock.parse_windows(["Mon-Fri 09:00-18:00"])
         self.assertEqual(len(windows), 1)
-        self.assertEqual(windows[0].name, "Mon-Fri 08:30-15:10")
+        self.assertEqual(windows[0].name, "Mon-Fri 09:00-18:00")
 
     def test_windows_tolerate_junk(self):
         self.assertEqual(clock.parse_windows(None), [])

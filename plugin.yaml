@@ -1,12 +1,12 @@
 name: time-context
-version: 0.2.0
+version: 0.2.1
 manifest_version: 2
 api_version: 1
 description: >-
   Tells the agent what time it is. Injects the current date, clock time, session
-  and turn durations, plus any user-defined time windows (school hours, night,
+  and turn durations, plus any user-defined time windows (office hours, night,
   quiet hours) into every turn — and exposes a `now` tool for an exact reading.
-author: Nikita
+author: trappka
 license: MIT
 homepage: https://github.com/trappka/hermes-time-context
 tags: [time, clock, context, schedule, automation]
@@ -33,7 +33,7 @@ config_schema:
     default: ""
     label: Timezone
     description: >-
-      IANA timezone, e.g. Europe/Moscow or America/New_York. Empty means the
+      IANA timezone, e.g. Europe/Berlin or America/New_York. Empty means the
       machine's local zone — right unless the agent runs somewhere else.
   show_seconds:
     type: bool
@@ -60,7 +60,7 @@ config_schema:
     label: Time windows
     description: >-
       Named recurring intervals as a JSON list. Each entry:
-      {"name": "School hours", "when": "Mon-Fri 08:30-15:10", "note": "school
-      contour busy: no deploy, no heavy builds"}. `when` accepts Mon-Fri /
+      {"name": "Office hours", "when": "Mon-Fri 09:00-18:00", "note": "people
+      are working: no deploys until it is quiet"}. `when` accepts Mon-Fri /
       пн-пт / sat,sun / daily / 0-4 plus one time range, e.g. "23:00-08:00" for
       a window that wraps midnight. Manage from chat with /time-context.
