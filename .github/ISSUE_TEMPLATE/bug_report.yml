@@ -1,0 +1,53 @@
+name: Bug report
+description: Something is wrong with the injected block, the tool or a window.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. The fastest way to a fix is the exact text the agent saw —
+        `/time-context` prints it verbatim.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you expected, and what you got instead.
+    validations:
+      required: true
+  - type: textarea
+    id: block
+    attributes:
+      label: The block the agent saw
+      description: Output of `/time-context` (or the `now` tool), pasted as-is.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: windows
+    attributes:
+      label: Your windows setting
+      description: The `windows` value from `hermes config get plugins.entries.time-context.settings.windows`.
+      render: yaml
+    validations:
+      required: false
+  - type: input
+    id: hermes-version
+    attributes:
+      label: Hermes version
+      description: Output of `hermes --version`.
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS and Python
+      placeholder: Windows 11 · Python 3.14
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I ran `/time-context` in a live session (not only `hermes chat -q`, which does not load plugins)
+          required: true

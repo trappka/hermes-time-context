@@ -1,5 +1,5 @@
 name: time-context
-version: 0.2.1
+version: 0.3.0
 manifest_version: 2
 api_version: 1
 description: >-
@@ -9,7 +9,8 @@ description: >-
 author: trappka
 license: MIT
 homepage: https://github.com/trappka/hermes-time-context
-tags: [time, clock, context, schedule, automation]
+tags: [time, clock, datetime, context, context-injection, prompt-cache, schedule,
+       time-windows, quiet-hours, working-hours, automation]
 requires_hermes: ">=0.21.5"
 provides_tools:
   - now
