@@ -1,0 +1,66 @@
+name: time-context
+version: 0.2.0
+manifest_version: 2
+api_version: 1
+description: >-
+  Tells the agent what time it is. Injects the current date, clock time, session
+  and turn durations, plus any user-defined time windows (school hours, night,
+  quiet hours) into every turn — and exposes a `now` tool for an exact reading.
+author: Nikita
+license: MIT
+homepage: https://github.com/trappka/hermes-time-context
+tags: [time, clock, context, schedule, automation]
+requires_hermes: ">=0.21.5"
+provides_tools:
+  - now
+provides_hooks:
+  - pre_llm_call
+  - post_llm_call
+config_schema:
+  enabled:
+    type: bool
+    default: true
+    label: Enabled
+    description: Inject the time block at the start of every turn.
+  locale:
+    type: str
+    choices: [en, ru]
+    default: "en"
+    label: Language
+    description: Language of the rendered block and of weekday and month names.
+  timezone:
+    type: str
+    default: ""
+    label: Timezone
+    description: >-
+      IANA timezone, e.g. Europe/Moscow or America/New_York. Empty means the
+      machine's local zone — right unless the agent runs somewhere else.
+  show_seconds:
+    type: bool
+    default: true
+    label: Show seconds
+    description: Include seconds in the clock reading.
+  show_durations:
+    type: bool
+    default: true
+    label: Show durations
+    description: >-
+      Show how long the session has been running and how long the previous turn
+      took — the two things a model cannot feel on its own.
+  show_stamp_note:
+    type: bool
+    default: true
+    label: Remind about the stamp
+    description: >-
+      Add a short note that the reading was taken at turn start, so the model
+      calls `now` when a long turn needs a fresh clock.
+  windows:
+    type: list
+    default: []
+    label: Time windows
+    description: >-
+      Named recurring intervals as a JSON list. Each entry:
+      {"name": "School hours", "when": "Mon-Fri 08:30-15:10", "note": "school
+      contour busy: no deploy, no heavy builds"}. `when` accepts Mon-Fri /
+      пн-пт / sat,sun / daily / 0-4 plus one time range, e.g. "23:00-08:00" for
+      a window that wraps midnight. Manage from chat with /time-context.
